@@ -19,6 +19,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         title = "Picture \(X ?? 0) of \(Y ?? 0)"
         navigationItem.largeTitleDisplayMode = .never
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
         //navigationItemはここだけに適用
         if let imageToLoad = selectedImage{
             imageView.image = UIImage(named: imageToLoad)
@@ -34,8 +35,18 @@ class DetailViewController: UIViewController {
         super.viewWillDisappear(animated)
         navigationController?.hidesBarsOnTap = false
     }
-    
-
+//    UIBarButtonはobjective-cには見えないので@objcをつける
+    @objc func shareTapped() {
+        guard let image = imageView.image?.jpegData(compressionQuality: 0.8) else {
+            print("No image found")
+            return
+        }
+        
+        let vc = UIActivityViewController(activityItems: [image, selectedImage ?? ""], applicationActivities: [])
+        //ipad用↓
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    }
     /*
     // MARK: - Navigation
 
